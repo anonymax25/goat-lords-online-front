@@ -1,0 +1,148 @@
+<div class="mb-1" *ngIf="result">
+    <ng-container *ngIf="result.isHidden; else notHidden">
+        <ng-container *ngIf="result.ids.length > 0; else noWinner">
+            waiting...
+        </ng-container>
+        <ng-template #noWinner >
+            <div class="flex-center">
+                <span>
+                    No winners
+                </span>
+                <div>
+                    <img src="../../../../assets/icons/rolling_eyes.png" height="40" alt="oh nooo...">   
+                </div>
+            </div>
+        </ng-template>
+    </ng-container>
+    <ng-template #notHidden>
+
+        <ng-container *ngIf="result.ids.length <= 1; else draw" class="v-flex-center">
+
+            <ng-container *ngIf="result.ids.length == 1; else noOne" class="v-flex-center">
+                <span class="cont">
+                    <mat-icon>emoji_events</mat-icon>
+                    <strong>{{getUserOfUserID(result.ids[0]).name}}</strong>
+                </span>
+
+                <span *ngIf="dice === 9" class="cont h3">
+                    <span>+{{countPlayerDice(9, result.ids[0])}}</span> 
+                    <img src="../../../../assets/icons/nugget.png" height="35px" alt="nuggets" class="light-bg">
+                </span>
+                
+                <span *ngIf="dice === 10" class="cont h3">
+                    <span>+{{getWonDollars()}}</span> 
+                    <img src="../../../../assets/icons/money.png" height="35px" alt="money" class="light-bg">
+                </span>
+                
+                <span *ngIf="dice === 11" class="cont">
+                    <span *ngIf="!result.isRedeemed && lobbyService.isWinner(result); else GSredeemed">
+                        pick between {{getNumberOfDiceOfWinner()}}
+                        <img src="../../../../assets/icons/store.png" height="25px" alt="nuggets" class="light-bg">
+                        card{{ getNumberOfDiceOfWinner() > 1 ? "s" : "" }}
+                    </span> 
+                    <ng-template #GSredeemed>
+                        got a card
+                    </ng-template>
+                </span>
+                
+                <span *ngIf="dice === 12" class="cont">
+                    <span>can steal a card</span> 
+                </span>
+                
+                <span *ngIf="dice === 13" class="cont">
+                    <span>{{getUserOfUserID(result.ids[0]).name}} is now the sherif!</span> 
+                </span>
+                
+                <!-- <span *ngIf="dice === 14" class="cont">
+                    <span>{{getUserOfUserID(result.ids[0]).name}} is now the sherif!</span> 
+                </span> -->
+                
+                <span *ngIf="dice === 15" class="cont">
+                    <span *ngIf="!result.isRedeemed && lobbyService.isWinner(result); else BLredeemed">
+                        pick a card
+                    </span> 
+                    <ng-template #BLredeemed>
+                        got a bad luck card
+                    </ng-template>
+                </span>
+                
+                
+                <span class="cont">
+                    <ng-container *ngIf="!result.isActionDone && !result.isRedeemed; else actionDone">
+                        <ng-container *ngIf="lobbyService.isWinner(result); else notWinner">
+
+                            <button
+                                *ngIf="dice == 11"
+                                (click)="chooseCards(result.dice, getNumberOfDiceOfWinner())" 
+                                mat-raised-button 
+                                color="accent">
+                                {{gameResultText.get(dice)}}
+                            </button>
+                            <button
+                                *ngIf="dice == 12"
+                                (click)="stealCards(result.dice, getNumberOfDiceOfWinner())" 
+                                mat-raised-button 
+                                color="accent">
+                                {{gameResultText.get(dice)}}
+                            </button>
+                        </ng-container> 
+                        <ng-template #notWinner>
+                            Winner choosing reward...
+                        </ng-template>
+                        
+                    </ng-container>
+                    <ng-template #actionDone>
+                        <ng-container *ngIf="lobbyService.isOwner(lobby)">
+                            <button mat-raised-button color="accent" [disabled]="result.isRedeemed" (click)="redeemReward()">Next step<mat-icon>navigate_next</mat-icon></button>
+                        </ng-container>
+                    </ng-template>
+                    
+                    
+                </span>
+            </ng-container>
+            <ng-template #noOne>
+                <p>
+                    No Winner !
+                </p>
+                <button mat-raised-button color="accent" [disabled]="result.isRedeemed" (click)="redeemReward()">Next step<mat-icon>navigate_next</mat-icon></button>
+
+            </ng-template>
+            
+            
+            <div *ngIf="result.isSherifResolve" class="text-danger sherif-pick">
+                <div class="cont m-1">
+                    <mat-icon>priority_high</mat-icon>
+                    <span>sherif&nbsp;pick</span>
+                </div>
+            </div>
+            
+        </ng-container>
+        
+        <ng-template #draw>
+            <div class="v-flex">
+                <strong class="text-center">
+                    Draw!
+                </strong>
+
+                <ng-container *ngIf="lobbyService.getSherif(lobby).id === lobbyService.getPlayer(lobby).userId; else notSherif">
+                    <span *ngFor="let playerId of result.ids" class="mb-1" [ngClass]="selectedPlayerId === playerId ? 'selected' : 'unSelected'">
+                        <button mat-stroked-button  (click)="selectPlayerId(playerId)" style="width: 100%; ">
+                            {{getUserOfUserID(playerId).name}}
+                        </button>
+                    </span>
+                    <button mat-raised-button color="accent" [disabled]="!selectedPlayerId" (click)="validateWinnerChoice()"><mat-icon>check</mat-icon> Validate</button>
+                </ng-container>
+                <ng-template #notSherif>
+                    <button mat-stroked-button [disabled]="true" *ngFor="let playerId of result.ids" class="mb-1">
+                        {{getUserOfUserID(playerId).name}}
+                    </button>
+                    <strong class="text-center">
+                        Sheriff {{lobbyService.getSherif(lobby).name}} is choosing...
+                    </strong>
+                </ng-template>
+
+                
+            </div>
+        </ng-template>
+    </ng-template>
+</div>

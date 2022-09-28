@@ -1,0 +1,17 @@
+<h1 mat-dialog-title>Choose a card</h1>
+<div>
+  <div class="choose-cards-container" mat-dialog-content>
+      <div *ngFor="let card of cards" class="choose-card" >
+          <span [ngClass]="{'selected': chosenCardId === card.id}">
+              {{card.text}}
+          </span>
+          <button mat-raised-button (click)="chooseCard(card)" color="accent">{{ card.canKeep ? "pick and keep this one!" : "pick and use now!"}}</button>
+      </div>
+  </div>
+  <div mat-dialog-actions class="justify-content-between">
+    <button mat-raised-button (click)="close()">Close</button>
+    <div [matTooltip]="!chosenCardId ? 'select a card first' : null">
+        <button mat-raised-button [disabled]="!chosenCardId" (click)="validate()" color="primary">Validate</button>
+    </div>
+  </div>
+</div>

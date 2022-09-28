@@ -1,0 +1,34 @@
+<div class="sticky-top toolbar-container">
+  <mat-toolbar>
+    
+    <button mat-button class="title" routerLink="/home">
+      <img src="./assets/icons/sherif-badge.png" height="40px">
+      Dice Town Online
+    </button>
+    <button mat-button class="mx-2" routerLink="/about">About</button>
+    <button mat-button class="mx-2" routerLink="/rules">Rules</button>
+  
+    <button mat-raised-button color="accent" class="mx-2" (click)="launchGame()">Play now!</button>
+    
+    <span class="spacer"></span>
+  
+    <button *ngIf="!authenticationService.isLogged()" mat-button routerLink="/register" class="mx-2">Register</button>
+    <button *ngIf="!authenticationService.isLogged()" mat-raised-button color="primary" (click)="openLogin()"class="mx-2">
+      Login
+    </button>
+
+    <button *ngIf="authenticationService.isLogged()" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Menu">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <mat-menu #menu>
+      <div mat-menu-item *ngIf="authenticationService.isLogged()" mat-button [routerLink]="['profile', authenticationService.getUserFromToken().id]" class="mx-2">
+        <mat-icon class="mr-1">badge</mat-icon> Profile
+      </div>
+      <div mat-menu-item *ngIf="authenticationService.isLogged()" mat-button (click)="logout()" class="mx-2">
+        <mat-icon class="mr-1">logout</mat-icon> Log out
+      </div>
+    </mat-menu>
+
+  </mat-toolbar>
+  <div class="bottom-liner"></div>
+</div>

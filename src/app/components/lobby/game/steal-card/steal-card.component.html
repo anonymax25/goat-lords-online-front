@@ -1,0 +1,103 @@
+<h1 mat-dialog-title>Saloon!</h1>
+<div>
+   
+    <mat-divider></mat-divider>
+
+  <div style="margin: 5px; border-radius: 5px; padding: 5px; margin-bottom: 3px" mat-dialog-content>
+        <div *ngIf="!choosenPlayer">
+            <div *ngFor="let player of lobbyService.getOtherPlayers(data.lobby)">
+                <div class="justify-content-between">
+                    
+                    <div class="stats">
+                        <span style="font-size: 2em; margin-right: 10px">{{lobbyService.playerToUser(data.lobby, player).name}}</span>
+                        <span class="stat"> 
+                            <strong style="font-size: 2em;">{{player.generalStorms.length}}&nbsp;*&nbsp;</strong> 
+                            <img src="../../../../../../assets/icons/store.png" height="40px">&nbsp;
+                        </span>
+                        <span class="stat"> 
+                            <strong style="font-size: 2em;">{{player.property.length}}&nbsp;*&nbsp;</strong> 
+                            <img src="../../../../../../assets/icons/saloon.png" height="40px">&nbsp;
+                        </span>
+                    </div>
+
+                    <button mat-raised-button (click)="choosePlayer(player)" [color]="choosenPlayer && choosenPlayer.userId === player.userId ? 'accent' : 'primary'">
+                        <span *ngIf="choosenPlayer && choosenPlayer.userId === player.userId">un-select</span>
+                        <span *ngIf="!choosenPlayer || choosenPlayer.userId !== player.userId">select</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        
+        <div *ngIf="choosenPlayer" >
+
+            <div *ngIf="!isRevealCards">
+
+                <strong>
+                    Steal {{numberOfCards}} card{{numberOfCards > 1 ? "s" : ""}} from {{lobbyService.playerToUser(data.lobby, choosenPlayer).name}}
+                </strong>
+                <p>
+                    Pick up to {{numberOfCards}} card{{numberOfCards > 1 ? "s" : ""}} in the list below
+                </p>
+
+                <mat-divider></mat-divider>
+
+                <div class="cards">
+                    <div *ngFor="let gs of choosenPlayer.generalStorms" class="card" (click)="selectGs(gs)" [ngClass]="selectedShownGeneralStorm.has(gs.id) ? 'select' : 'unSelect'">
+                        General Storms
+                    </div>
+                    <div *ngFor="let property of choosenPlayer.property" class="card" (click)="selectProperty(property)" [ngClass]="selectedShownProperty.has(property.id) ? 'select' : 'unSelect'">
+                        Property
+                    </div>
+                </div>
+
+            </div>
+            <div *ngIf="isRevealCards">
+                <strong>
+                    Steal a card from those you revealed
+                </strong>
+                <div class="cards">
+                    <div *ngFor="let gs of shownGeneralStorm" class="revealed-card" (click)="cardID ? card = null: cardID = gs.id" [ngClass]="cardID == gs.id ? 'select' : 'unSelect'">
+                        <strong class="title">
+                            General storms
+                        </strong>
+                        <div class="action">
+                            Ability: {{gs.text}}
+                        </div>
+                        <div>
+                            Playable: {{gs.category}}
+                        </div>
+                    </div>
+                    <div *ngFor="let property of shownProperty" class="revealed-card" (click)="cardID ? card = null : cardID = property.id" [ngClass]="cardID == property.id ? 'select' : 'unSelect'">
+                        <strong class="title">
+                            Property
+                        </strong>
+                        <div>
+                            Value: {{gs.value}} point
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+      
+  </div>
+
+  <mat-divider></mat-divider>
+
+  <div mat-dialog-actions class="justify-content-between">
+    <button mat-raised-button (click)="close()">Close</button>
+
+
+    
+    <div *ngIf="choosenPlayer && !isRevealCards" [matTooltip]="selectedShownProperty.size + selectedShownGeneralStorm.size < data.numberOfCards ? 'select ' + data.numberOfCards + 'cards' : null">
+        <button mat-raised-button (click)="revealCards()" [disabled]="selectedShownProperty.size + selectedShownGeneralStorm.size < data.numberOfCards"color="primary">Reveal</button>
+    </div>
+
+    <div *ngIf="isRevealCards" [matTooltip]="!cardID ? 'choose a card to steal first' : null">
+        <button mat-raised-button  [disabled]="!cardID" (click)="validate()" color="accent">Steal</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+.choose-cards-container {
+    display: flex;
+    flex-direction: column;
+
+    .choose-card {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 4px;
+        padding: 5px;
+    }
+}
